@@ -1,4 +1,4 @@
-package az.semmed.kafkasharedclasses;
+package az.semmed.kafkasharedclasses.order;
 
 import java.math.BigDecimal;
 import java.util.List;
