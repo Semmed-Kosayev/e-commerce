@@ -4,6 +4,10 @@ import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
 import az.semmed.orderservice.application.port.in.CreateOrderUseCase;
 import az.semmed.orderservice.domain.Order;
 import az.semmed.orderservice.domain.OrderItem;
+import az.semmed.orderservice.domain.OrderStatus;
+import az.semmed.orderservice.infrastructure.adapter.out.jpa.OrderEntity;
+import az.semmed.orderservice.infrastructure.adapter.out.jpa.OrderItemEntity;
+import az.semmed.orderservice.infrastructure.adapter.out.jpa.OrderStatusJpa;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -42,6 +46,54 @@ public class OrderMapper {
                 domainItem.productId(),
                 domainItem.quantity(),
                 domainItem.price()
+        );
+    }
+
+    public OrderEntity toJpaEntity(Order order) {
+        OrderEntity entity = new OrderEntity();
+
+        entity.setOrderId(order.getOrderId());
+        entity.setCustomerEmail(order.getCustomerEmail());
+        entity.setStatus(OrderStatusJpa.valueOf(order.getStatus().name()));
+        entity.setCreatedAt(order.getCreatedAt());
+        entity.setTotalPrice(order.getTotalPrice());
+
+        order.getItems().stream()
+                .map(this::toJpaItemEntity)
+                .forEach(entity::addItem);
+
+        return entity;
+    }
+
+    private OrderItemEntity toJpaItemEntity(OrderItem domainItem) {
+        OrderItemEntity itemEntity = new OrderItemEntity();
+
+        itemEntity.setProductId(domainItem.productId());
+        itemEntity.setQuantity(domainItem.quantity());
+        itemEntity.setPrice(domainItem.price());
+
+        return itemEntity;
+    }
+
+    public Order toOrder(OrderEntity entity) {
+        List<OrderItem> domainItems = entity.getItems().stream()
+                .map(this::toDomainItem)
+                .toList();
+
+        return Order.reform(
+                entity.getOrderId(),
+                entity.getCustomerEmail(),
+                domainItems,
+                entity.getCreatedAt(),
+                OrderStatus.valueOf(entity.getStatus().name())
+        );
+    }
+
+    private OrderItem toDomainItem(OrderItemEntity itemEntity) {
+        return new OrderItem(
+                itemEntity.getProductId(),
+                itemEntity.getQuantity(),
+                itemEntity.getPrice()
         );
     }
 }

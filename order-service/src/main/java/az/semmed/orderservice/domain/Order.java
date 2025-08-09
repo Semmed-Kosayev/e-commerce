@@ -25,6 +25,27 @@ public class Order {
         return order;
     }
 
+    public static Order reform(
+            String orderId,
+            String customerEmail,
+            List<OrderItem> items,
+            LocalDateTime createdAt,
+            OrderStatus status
+    ) {
+        return new Order(orderId, customerEmail, items, createdAt, status);
+    }
+
+    private Order() {
+    }
+
+    private Order(String orderId, String customerEmail, List<OrderItem> items, LocalDateTime createdAt, OrderStatus status) {
+        this.orderId = orderId;
+        this.customerEmail = customerEmail;
+        this.items = items;
+        this.createdAt = createdAt;
+        this.status = status;
+    }
+
     public BigDecimal getTotalPrice() {
         return items.stream()
                 .map(item -> item.price().multiply(new BigDecimal(item.quantity())))
