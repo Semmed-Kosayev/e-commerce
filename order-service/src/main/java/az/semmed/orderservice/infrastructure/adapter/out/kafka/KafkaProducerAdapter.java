@@ -1,4 +1,4 @@
-package az.semmed.orderservice.infrastructure.adapter.out;
+package az.semmed.orderservice.infrastructure.adapter.out.kafka;
 
 import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
 import az.semmed.orderservice.application.port.out.KafkaProducerPort;
