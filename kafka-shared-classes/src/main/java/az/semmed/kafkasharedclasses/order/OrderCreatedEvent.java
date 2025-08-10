@@ -9,6 +9,7 @@ public record OrderCreatedEvent(
         String customerEmail
 ) {
     public record OrderItem(
+            Long orderItemId,
             String productId,
             int quantity,
             BigDecimal price

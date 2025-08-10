@@ -11,6 +11,7 @@ import az.semmed.orderservice.infrastructure.adapter.out.jpa.OrderStatusJpa;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class OrderMapper {
@@ -25,6 +26,7 @@ public class OrderMapper {
 
     private OrderItem toOrderItem(CreateOrderUseCase.CreateOrderCommand.OrderItemCommand itemCommand) {
         return new OrderItem(
+                Optional.empty(),
                 itemCommand.productId(),
                 itemCommand.quantity(),
                 itemCommand.price()
@@ -43,6 +45,7 @@ public class OrderMapper {
 
     private OrderCreatedEvent.OrderItem toSharedOrderItem(OrderItem domainItem) {
         return new OrderCreatedEvent.OrderItem(
+                domainItem.orderItemId().isPresent()? domainItem.orderItemId().get() : null,
                 domainItem.productId(),
                 domainItem.quantity(),
                 domainItem.price()
@@ -68,6 +71,11 @@ public class OrderMapper {
     private OrderItemEntity toJpaItemEntity(OrderItem domainItem) {
         OrderItemEntity itemEntity = new OrderItemEntity();
 
+        itemEntity.setId(domainItem.orderItemId().isPresent()?
+                domainItem.orderItemId().get()
+                :
+                null
+        );
         itemEntity.setProductId(domainItem.productId());
         itemEntity.setQuantity(domainItem.quantity());
         itemEntity.setPrice(domainItem.price());
@@ -91,6 +99,7 @@ public class OrderMapper {
 
     private OrderItem toDomainItem(OrderItemEntity itemEntity) {
         return new OrderItem(
+                Optional.of(itemEntity.getId()),
                 itemEntity.getProductId(),
                 itemEntity.getQuantity(),
                 itemEntity.getPrice()
