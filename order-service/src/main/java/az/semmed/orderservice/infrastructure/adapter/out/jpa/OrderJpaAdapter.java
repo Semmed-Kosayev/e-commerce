@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,5 +28,10 @@ public class OrderJpaAdapter implements OrderRepositoryPort {
         return orderJpaRepository.findAllByCustomerEmail(customerEmail).stream()
                 .map(orderMapper::toOrder)
                 .toList();
+    }
+
+    @Override
+    public Optional<Order> findById(String id) {
+        return orderJpaRepository.findById(id).map(orderMapper::toOrder);
     }
 }
