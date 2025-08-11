@@ -6,6 +6,8 @@ import az.semmed.orderservice.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class OrderJpaAdapter implements OrderRepositoryPort {
@@ -18,5 +20,12 @@ public class OrderJpaAdapter implements OrderRepositoryPort {
         OrderEntity orderEntity = orderMapper.toJpaEntity(order);
         orderJpaRepository.save(orderEntity);
         return orderMapper.toOrder(orderEntity);
+    }
+
+    @Override
+    public List<Order> findCustomerOrdersByEmail(String customerEmail) {
+        return orderJpaRepository.findAllByCustomerEmail(customerEmail).stream()
+                .map(orderMapper::toOrder)
+                .toList();
     }
 }
