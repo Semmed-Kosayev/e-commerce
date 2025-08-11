@@ -6,7 +6,6 @@ import az.semmed.orderservice.application.port.in.GetCustomerOrdersUseCase;
 import az.semmed.orderservice.application.port.out.KafkaProducerPort;
 import az.semmed.orderservice.application.port.out.OrderRepositoryPort;
 import az.semmed.orderservice.domain.Order;
-import az.semmed.orderservice.service.exception.CustomerNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
