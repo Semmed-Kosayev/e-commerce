@@ -1,6 +1,7 @@
 package az.semmed.orderservice.infrastructure.adapter.out.kafka;
 
 import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
+import az.semmed.kafkasharedclasses.order.OrderFinalizedEvent;
 import az.semmed.orderservice.application.port.out.KafkaProducerPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,5 +17,10 @@ public class KafkaProducerAdapter implements KafkaProducerPort {
     @Override
     public void sendOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent) {
         kafkaTemplate.send(TOPIC, orderCreatedEvent.orderId(), orderCreatedEvent);
+    }
+
+    @Override
+    public void sendOrderFinalizedEvent(OrderFinalizedEvent orderFinalizedEvent) {
+        kafkaTemplate.send(TOPIC, orderFinalizedEvent.orderId(), orderFinalizedEvent);
     }
 }
