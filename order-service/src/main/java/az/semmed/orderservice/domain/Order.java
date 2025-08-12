@@ -70,14 +70,6 @@ public class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void confirm() {
-        this.status = OrderStatus.CONFIRMED;
-    }
-
-    public void reject() {
-        this.status = OrderStatus.REJECTED;
-    }
-
     public String getOrderId() {
         return orderId;
     }
