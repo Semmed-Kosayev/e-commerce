@@ -1,5 +1,7 @@
 package az.semmed.orderservice.domain;
 
+import az.semmed.orderservice.domain.exception.IllegalOrderStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +35,22 @@ public class Order {
             OrderStatus status
     ) {
         return new Order(orderId, customerEmail, items, createdAt, status);
+    }
+
+    public void markAsConfirmed() {
+        if (status != OrderStatus.PENDING) {
+            throw new IllegalOrderStatus("Only PENDING orders can be marked as confirmed");
+        }
+
+        this.status = OrderStatus.CONFIRMED;
+    }
+
+    public void markAsRejected() {
+        if (status != OrderStatus.PENDING) {
+            throw new IllegalOrderStatus("Only PENDING orders can be rejected");
+        }
+
+        this.status = OrderStatus.REJECTED;
     }
 
     private Order() {

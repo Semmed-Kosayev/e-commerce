@@ -1,6 +1,8 @@
 package az.semmed.orderservice.application.mapper;
 
 import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
+import az.semmed.kafkasharedclasses.order.OrderFinalizedEvent;
+import az.semmed.kafkasharedclasses.order.OrderFinalizedStatus;
 import az.semmed.orderservice.application.port.in.CreateOrderUseCase;
 import az.semmed.orderservice.domain.Order;
 import az.semmed.orderservice.domain.OrderItem;
@@ -103,6 +105,13 @@ public class OrderMapper {
                 itemEntity.getProductId(),
                 itemEntity.getQuantity(),
                 itemEntity.getPrice()
+        );
+    }
+
+    public OrderFinalizedEvent toOrderFinalizedEvent(Order order) {
+        return new OrderFinalizedEvent(
+                order.getOrderId(),
+                OrderFinalizedStatus.valueOf(order.getStatus().name())
         );
     }
 }

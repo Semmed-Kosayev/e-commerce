@@ -1,9 +1,11 @@
 package az.semmed.orderservice.service;
 
 import az.semmed.orderservice.application.mapper.OrderMapper;
+import az.semmed.orderservice.application.port.in.ConfirmOrderUseCase;
 import az.semmed.orderservice.application.port.in.CreateOrderUseCase;
 import az.semmed.orderservice.application.port.in.GetCustomerOrdersUseCase;
 import az.semmed.orderservice.application.port.in.GetOrderUseCase;
+import az.semmed.orderservice.application.port.in.RejectOrderUseCase;
 import az.semmed.orderservice.application.port.out.KafkaProducerPort;
 import az.semmed.orderservice.application.port.out.OrderRepositoryPort;
 import az.semmed.orderservice.domain.Order;
@@ -15,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCase, GetOrderUseCase {
+public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCase, GetOrderUseCase, ConfirmOrderUseCase, RejectOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final KafkaProducerPort kafkaProducerPort;
@@ -43,5 +45,37 @@ public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCas
     public Order getOrder(String orderId) {
         return orderRepositoryPort.findById(orderId)
                 .orElseThrow(() -> new OrderNotFound("Order not found with id: " + orderId));
+    }
+
+    @Override
+    public Order confirmOrder(String orderId) {
+        Order order = orderRepositoryPort.findById(orderId)
+                .orElseThrow(() -> new OrderNotFound("Order not found with id: " + orderId));
+
+        order.markAsConfirmed();
+
+        Order savedOrder = orderRepositoryPort.save(order);
+
+        kafkaProducerPort.sendOrderFinalizedEvent(
+                orderMapper.toOrderFinalizedEvent(savedOrder)
+        );
+
+        return savedOrder;
+    }
+
+    @Override
+    public Order rejectOrder(String orderId) {
+        Order order = orderRepositoryPort.findById(orderId)
+                .orElseThrow(() -> new OrderNotFound("Order not found with id: " + orderId));
+
+        order.markAsRejected();
+
+        Order savedOrder = orderRepositoryPort.save(order);
+
+        kafkaProducerPort.sendOrderFinalizedEvent(
+                orderMapper.toOrderFinalizedEvent(savedOrder)
+        );
+
+        return savedOrder;
     }
 }
