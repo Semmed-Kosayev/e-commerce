@@ -114,4 +114,11 @@ public class OrderMapper {
                 OrderFinalizedStatus.valueOf(order.getStatus().name())
         );
     }
+
+    public void updateJpaEntity(OrderEntity entity, Order order) {
+        entity.setCustomerEmail(order.getCustomerEmail());
+        entity.setStatus(OrderStatusJpa.valueOf(order.getStatus().name()));
+        entity.setCreatedAt(order.getCreatedAt());
+        entity.setTotalPrice(order.getTotalPrice());
+    }
 }

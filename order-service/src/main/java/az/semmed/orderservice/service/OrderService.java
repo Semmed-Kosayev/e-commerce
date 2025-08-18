@@ -11,12 +11,16 @@ import az.semmed.orderservice.application.port.out.OrderRepositoryPort;
 import az.semmed.orderservice.domain.Order;
 import az.semmed.orderservice.service.exception.OrderNotFound;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
+@Slf4j
 public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCase, GetOrderUseCase, ConfirmOrderUseCase, RejectOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
@@ -53,7 +57,7 @@ public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCas
                 .orElseThrow(() -> new OrderNotFound("Order not found with id: " + orderId));
 
         order.markAsConfirmed();
-
+        System.out.println("\n\n\n\n\n\n ----->" + order.getStatus());
         Order savedOrder = orderRepositoryPort.save(order);
 
         kafkaProducerPort.sendOrderFinalizedEvent(

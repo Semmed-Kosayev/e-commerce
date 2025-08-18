@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class KafkaProducerAdapter implements KafkaProducerPort {
 
     private final static String TOPIC = "order-events-topic";
+    private final static String ORDER_FINALIZED_TOPIC = "order-finalized-events-topic";
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
@@ -21,6 +22,6 @@ public class KafkaProducerAdapter implements KafkaProducerPort {
 
     @Override
     public void sendOrderFinalizedEvent(OrderFinalizedEvent orderFinalizedEvent) {
-        kafkaTemplate.send(TOPIC, orderFinalizedEvent.orderId(), orderFinalizedEvent);
+        kafkaTemplate.send(ORDER_FINALIZED_TOPIC, orderFinalizedEvent.orderId(), orderFinalizedEvent);
     }
 }

@@ -1,1 +1,39 @@
-spring.application.name=inventory-service
+server:
+  port: 8081
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/inventoryservice
+    username: inventoryservice
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      fetch-min-size: 1024  # Wait for at least 1KB of data
+      fetch-max-wait: 500ms # Max wait time before returning
+      max-poll-interval-ms: 300000 # 5 minutes
+      session-timeout-ms: 30000
+      group-id: inventory-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "az.semmed.kafkasharedclasses.*"
+      enable-auto-commit: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#logging:
+#  level:
+#    org.springframework.kafka.support.serializer: DEBUG
+#    org.apache.kafka.clients.consumer: DEBUG

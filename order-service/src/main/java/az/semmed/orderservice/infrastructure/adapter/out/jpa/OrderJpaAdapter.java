@@ -3,6 +3,7 @@ package az.semmed.orderservice.infrastructure.adapter.out.jpa;
 import az.semmed.orderservice.application.mapper.OrderMapper;
 import az.semmed.orderservice.application.port.out.OrderRepositoryPort;
 import az.semmed.orderservice.domain.Order;
+import az.semmed.orderservice.service.exception.OrderNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,22 @@ public class OrderJpaAdapter implements OrderRepositoryPort {
 
     @Override
     public Order save(Order order) {
-        OrderEntity orderEntity = orderMapper.toJpaEntity(order);
-        orderJpaRepository.save(orderEntity);
-        return orderMapper.toOrder(orderEntity);
+        OrderEntity orderEntity;
+
+        if (order.getOrderId() != null && orderJpaRepository.existsById(order.getOrderId())) {
+            // For updates: fetch existing entity and merge changes
+            orderEntity = orderJpaRepository.findById(order.getOrderId())
+                    .orElseThrow(() -> new IllegalStateException("Entity should exist"));
+
+            // THIS WAS MISSING! Update the fetched entity with new domain data
+            orderMapper.updateJpaEntity(orderEntity, order);
+        } else {
+            // For new entities: create fresh entity
+            orderEntity = orderMapper.toJpaEntity(order);
+        }
+
+        OrderEntity savedEntity = orderJpaRepository.save(orderEntity);
+        return orderMapper.toOrder(savedEntity);
     }
 
     @Override
