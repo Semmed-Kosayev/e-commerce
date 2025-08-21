@@ -1,5 +1,6 @@
 package az.semmed.orderservice.infrastructure.adapter.out.kafka;
 
+import az.semmed.kafkasharedclasses.order.OrderConstants;
 import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
 import az.semmed.kafkasharedclasses.order.OrderFinalizedEvent;
 import az.semmed.orderservice.application.port.out.KafkaProducerPort;
@@ -9,19 +10,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class KafkaProducerAdapter implements KafkaProducerPort {
+public class OrderKafkaProducerAdapter implements KafkaProducerPort {
 
-    private final static String TOPIC = "order-events-topic";
-    private final static String ORDER_FINALIZED_TOPIC = "order-finalized-events-topic";
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public void sendOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent) {
-        kafkaTemplate.send(TOPIC, orderCreatedEvent.orderId(), orderCreatedEvent);
+        kafkaTemplate.send(OrderConstants.ORDER_CREATED_TOPIC, orderCreatedEvent.orderId(), orderCreatedEvent);
     }
 
     @Override
     public void sendOrderFinalizedEvent(OrderFinalizedEvent orderFinalizedEvent) {
-        kafkaTemplate.send(ORDER_FINALIZED_TOPIC, orderFinalizedEvent.orderId(), orderFinalizedEvent);
+        kafkaTemplate.send(OrderConstants.ORDER_FINALIZED_TOPIC, orderFinalizedEvent.orderId(), orderFinalizedEvent);
     }
 }
