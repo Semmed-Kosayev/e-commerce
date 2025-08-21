@@ -52,7 +52,8 @@ public class OrderKafkaProducerAdapter implements KafkaProducerPort {
     public OrderFinalizedEvent toOrderFinalizedEvent(Order order) {
         return new OrderFinalizedEvent(
                 order.getOrderId(),
-                OrderFinalizedStatus.valueOf(order.getStatus().name())
+                OrderFinalizedStatus.valueOf(order.getStatus().name()),
+                order.getCustomerEmail()
         );
     }
 }

@@ -2,6 +2,7 @@ package az.semmed.kafkasharedclasses.order;
 
 public record OrderFinalizedEvent(
         String orderId,
-        OrderFinalizedStatus status
+        OrderFinalizedStatus status,
+        String customerEmail
 ) {
 }
