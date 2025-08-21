@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class InventoryKafkaListener {
@@ -18,16 +16,21 @@ public class InventoryKafkaListener {
 
     @KafkaListener(topics = OrderConstants.ORDER_CREATED_TOPIC, groupId = InventoryConstants.GROUP_ID)
     public void listenToOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent) {
-        List<ReserveInventoryForOrderUseCase.ReserveInventoryCommand.ProductCommand> productCommands =
-                orderCreatedEvent.items().stream()
-                        .map(i -> new ReserveInventoryForOrderUseCase.ReserveInventoryCommand.ProductCommand(
-                                i.productId(),
-                                i.quantity())
-                        )
-                        .toList();
+        var productCommands = orderCreatedEvent.items().stream()
+                .map(this::toProductCommand)
+                .toList();
 
         reserveInventoryForOrderUseCase.reserveInventoryForOrder(
                 new ReserveInventoryForOrderUseCase.ReserveInventoryCommand(orderCreatedEvent.orderId(), productCommands)
+        );
+    }
+
+    private ReserveInventoryForOrderUseCase.ReserveInventoryCommand.ProductCommand toProductCommand(
+            OrderCreatedEvent.OrderItem orderItem
+    ) {
+        return new ReserveInventoryForOrderUseCase.ReserveInventoryCommand.ProductCommand(
+                orderItem.productId(),
+                orderItem.quantity()
         );
     }
 

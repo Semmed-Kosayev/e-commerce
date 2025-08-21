@@ -7,7 +7,6 @@ import az.semmed.inventoryservice.domain.Inventory;
 import az.semmed.inventoryservice.domain.exception.InsufficientStock;
 import az.semmed.inventoryservice.service.exception.ProductNotFound;
 import lombok.RequiredArgsConstructor;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +20,10 @@ public class InventoryService implements ReserveInventoryForOrderUseCase {
 
     @Override
     public void reserveInventoryForOrder(ReserveInventoryCommand reserveInventoryCommand) {
+        String orderId = reserveInventoryCommand.orderId();
+
         try {
-            for (ReserveInventoryCommand.ProductCommand product : reserveInventoryCommand.products()) {
+            for (var product : reserveInventoryCommand.products()) {
                 String productId = product.productId();
                 int quantity = product.quantity();
 
@@ -33,10 +34,10 @@ public class InventoryService implements ReserveInventoryForOrderUseCase {
                 repository.save(inventory);
             }
 
-            kafkaProducer.sendInventoryReservedEvent(reserveInventoryCommand.orderId());
+            kafkaProducer.sendInventoryReservedEvent(orderId);
 
-        } catch (InsufficientStock | ProductNotFound | ObjectOptimisticLockingFailureException e) {
-            kafkaProducer.sendInventoryUnavailableEvent(reserveInventoryCommand.orderId());
+        } catch (InsufficientStock | ProductNotFound e) {
+            kafkaProducer.sendInventoryUnavailableEvent(orderId);
         }
     }
 }

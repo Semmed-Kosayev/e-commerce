@@ -1,7 +1,5 @@
 package az.semmed.inventoryservice.application.port.in;
 
-import az.semmed.inventoryservice.domain.Inventory;
-
 import java.util.List;
 
 public interface ReserveInventoryForOrderUseCase {
@@ -15,6 +13,7 @@ public interface ReserveInventoryForOrderUseCase {
         public record ProductCommand(
                 String productId,
                 int quantity
-        ) {}
+        ) {
+        }
     }
 }
