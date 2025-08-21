@@ -1,8 +1,5 @@
 package az.semmed.orderservice.application.mapper;
 
-import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
-import az.semmed.kafkasharedclasses.order.OrderFinalizedEvent;
-import az.semmed.kafkasharedclasses.order.OrderFinalizedStatus;
 import az.semmed.orderservice.application.port.in.CreateOrderUseCase;
 import az.semmed.orderservice.domain.Order;
 import az.semmed.orderservice.domain.OrderItem;
@@ -35,25 +32,6 @@ public class OrderMapper {
         );
     }
 
-    public OrderCreatedEvent toOrderCreatedEvent(Order order) {
-        return new OrderCreatedEvent(
-                order.getOrderId(),
-                order.getItems().stream()
-                        .map(this::toSharedOrderItem)
-                        .toList(),
-                order.getCustomerEmail()
-        );
-    }
-
-    private OrderCreatedEvent.OrderItem toSharedOrderItem(OrderItem domainItem) {
-        return new OrderCreatedEvent.OrderItem(
-                domainItem.orderItemId().isPresent()? domainItem.orderItemId().get() : null,
-                domainItem.productId(),
-                domainItem.quantity(),
-                domainItem.price()
-        );
-    }
-
     public OrderEntity toJpaEntity(Order order) {
         OrderEntity entity = new OrderEntity();
 
@@ -73,7 +51,7 @@ public class OrderMapper {
     private OrderItemEntity toJpaItemEntity(OrderItem domainItem) {
         OrderItemEntity itemEntity = new OrderItemEntity();
 
-        itemEntity.setId(domainItem.orderItemId().isPresent()?
+        itemEntity.setId(domainItem.orderItemId().isPresent() ?
                 domainItem.orderItemId().get()
                 :
                 null
@@ -105,13 +83,6 @@ public class OrderMapper {
                 itemEntity.getProductId(),
                 itemEntity.getQuantity(),
                 itemEntity.getPrice()
-        );
-    }
-
-    public OrderFinalizedEvent toOrderFinalizedEvent(Order order) {
-        return new OrderFinalizedEvent(
-                order.getOrderId(),
-                OrderFinalizedStatus.valueOf(order.getStatus().name())
         );
     }
 

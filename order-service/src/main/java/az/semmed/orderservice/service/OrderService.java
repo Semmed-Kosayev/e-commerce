@@ -33,9 +33,7 @@ public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCas
 
         Order savedOrder = orderRepositoryPort.save(order);
 
-        kafkaProducerPort.sendOrderCreatedEvent(
-                orderMapper.toOrderCreatedEvent(savedOrder)
-        );
+        kafkaProducerPort.sendOrderCreatedEvent(savedOrder);
 
         return order;
     }
@@ -57,12 +55,10 @@ public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCas
                 .orElseThrow(() -> new OrderNotFound("Order not found with id: " + orderId));
 
         order.markAsConfirmed();
-        System.out.println("\n\n\n\n\n\n ----->" + order.getStatus());
+
         Order savedOrder = orderRepositoryPort.save(order);
 
-        kafkaProducerPort.sendOrderFinalizedEvent(
-                orderMapper.toOrderFinalizedEvent(savedOrder)
-        );
+        kafkaProducerPort.sendOrderFinalizedEvent(savedOrder);
 
         return savedOrder;
     }
@@ -76,9 +72,7 @@ public class OrderService implements CreateOrderUseCase, GetCustomerOrdersUseCas
 
         Order savedOrder = orderRepositoryPort.save(order);
 
-        kafkaProducerPort.sendOrderFinalizedEvent(
-                orderMapper.toOrderFinalizedEvent(savedOrder)
-        );
+        kafkaProducerPort.sendOrderFinalizedEvent(savedOrder);
 
         return savedOrder;
     }

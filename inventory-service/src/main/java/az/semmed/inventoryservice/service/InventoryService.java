@@ -1,14 +1,11 @@
 package az.semmed.inventoryservice.service;
 
-import az.semmed.inventoryservice.application.mapper.InventoryMapper;
 import az.semmed.inventoryservice.application.port.in.ReserveInventoryForOrderUseCase;
 import az.semmed.inventoryservice.application.port.out.InventoryRepositoryPort;
 import az.semmed.inventoryservice.application.port.out.KafkaProducerPort;
 import az.semmed.inventoryservice.domain.Inventory;
 import az.semmed.inventoryservice.domain.exception.InsufficientStock;
 import az.semmed.inventoryservice.service.exception.ProductNotFound;
-import az.semmed.kafkasharedclasses.inventory.InventoryReservedEvent;
-import az.semmed.kafkasharedclasses.inventory.InventoryUnavailableEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -36,14 +33,10 @@ public class InventoryService implements ReserveInventoryForOrderUseCase {
                 repository.save(inventory);
             }
 
-            kafkaProducer.sendInventoryReservedEvent(
-                    new InventoryReservedEvent(reserveInventoryCommand.orderId())
-            );
+            kafkaProducer.sendInventoryReservedEvent(reserveInventoryCommand.orderId());
 
         } catch (InsufficientStock | ProductNotFound | ObjectOptimisticLockingFailureException e) {
-            kafkaProducer.sendInventoryUnavailableEvent(
-                    new InventoryUnavailableEvent(reserveInventoryCommand.orderId())
-            );
+            kafkaProducer.sendInventoryUnavailableEvent(reserveInventoryCommand.orderId());
         }
     }
 }

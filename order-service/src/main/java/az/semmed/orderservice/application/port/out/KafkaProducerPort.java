@@ -1,12 +1,12 @@
 package az.semmed.orderservice.application.port.out;
 
-import az.semmed.kafkasharedclasses.order.OrderCreatedEvent;
-import az.semmed.kafkasharedclasses.order.OrderFinalizedEvent;
+import az.semmed.orderservice.domain.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 public interface KafkaProducerPort {
 
-    void sendOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent);
-    void sendOrderFinalizedEvent(OrderFinalizedEvent orderFinalizedEvent);
+    void sendOrderCreatedEvent(Order orderCreatedEvent);
+
+    void sendOrderFinalizedEvent(Order orderFinalizedEvent);
 }

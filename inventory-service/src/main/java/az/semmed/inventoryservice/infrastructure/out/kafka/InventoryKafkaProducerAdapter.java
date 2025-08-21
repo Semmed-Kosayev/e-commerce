@@ -15,12 +15,14 @@ public class InventoryKafkaProducerAdapter implements KafkaProducerPort {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
-    public void sendInventoryReservedEvent(InventoryReservedEvent inventoryReservedEvent) {
+    public void sendInventoryReservedEvent(String orderId) {
+        InventoryReservedEvent inventoryReservedEvent = new InventoryReservedEvent(orderId);
         kafkaTemplate.send(InventoryConstants.INVENTORY_RESERVED_TOPIC, inventoryReservedEvent.orderId(), inventoryReservedEvent);
     }
 
     @Override
-    public void sendInventoryUnavailableEvent(InventoryUnavailableEvent inventoryUnavailableEvent) {
+    public void sendInventoryUnavailableEvent(String orderId) {
+        InventoryUnavailableEvent inventoryUnavailableEvent = new InventoryUnavailableEvent(orderId);
         kafkaTemplate.send(InventoryConstants.INVENTORY_UNAVAILABLE_TOPIC, inventoryUnavailableEvent.orderId(), inventoryUnavailableEvent);
     }
 }
